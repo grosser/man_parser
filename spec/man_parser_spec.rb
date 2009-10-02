@@ -4,9 +4,9 @@ describe ManParser do
   describe :parse do
     it "finds the description" do
       d = ManParser.parse('ls')[:description]
-      d.should =~ /^List information about the FILEs /
+      d.should =~ /^\.PPList information about the FILEs \(the current/
       d.should =~ /problems, 2 if serious trouble\.$/
-      d.should_not include('-a, --all')
+      d.should_not include('\\-\\-all')
       d.should_not include('do not ignore entries starting with')
       d.should_not include("      ")
     end
@@ -17,7 +17,7 @@ describe ManParser do
       end
 
       it "finds all options" do
-        options.size.should == 59
+        options.size.should == 58
       end
 
       it "extracts the name" do
@@ -29,19 +29,19 @@ describe ManParser do
       end
 
       it "extracts the description" do
-        options.first[:description].should == 'do not ignore entries starting with .'
+        options.first[:description].should == 'do not ignore entries starting with . .TP'
       end
 
       it "understands format with only name (--author)" do
-        options[2].should == {:name=>'author', :description=>'with -l, print the author of each file'}
+        options[2].should == {:name=>'author', :description=>'with \\fB\\-l\\fR, print the author of each file .TP'}
       end
 
       it "understands format with parameters --x=SIZE" do
-        options[4].should == {:name=>"block-size", :description=>"=SIZE use SIZE-byte blocks"}
+        options[4].should == {:name=>"block\\-size\\fR=\\fISIZE", :description=>"use SIZE\\-byte blocks .TP"}
       end
 
       it "userstands single-line style" do
-        options[7].should == {:name=>"C", :description=>"list entries by columns"}
+        options[7].should == {:name=>"C", :description=>"list entries by columns .TP"}
       end
     end
   end

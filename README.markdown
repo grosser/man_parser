@@ -1,3 +1,5 @@
+Parse man source into a Hash
+
 Install
 =======
     sudo gem install grosser-man_parser -s http://gems.github.com/

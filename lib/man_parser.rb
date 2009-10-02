@@ -15,10 +15,11 @@ class ManParser
 
   def self.parse_option(option)
     option = option.join(' ')
-    found = if option =~ /^\s+-(\w+), --([-\w]+)(.*)/
+#    option_rex = '([-\w\\]|[-\w\\]+\\fR=\\fI\w+)'
+    found = if option =~ /^\\fB\\-([-\w\\]+\\fR=\\fI\w+|[-\w\\]+)\\fR, \\fB\\-\\-([-\w\\]+\\fR=\\fI\w+|[-\w\\]+)\\fR(.*)/
       {:alias=>$1, :name=>$2, :description=>$3}
-    elsif option =~ /^\s+-[-]?([-\w]+)(.*)/
-      {:name=>$1, :description=>$2}
+    elsif option =~ /^\\fB(\\-){1,2}([-\w\\]+\\fR=\\fI\w+|[-\w\\]+)\\fR(.*)/
+      {:name=>$2, :description=>$3}
     end
     return unless found
     found[:description] = found[:description].to_s.strip.gsub(/\s{2,}/, ' ')
@@ -27,15 +28,17 @@ class ManParser
 
   def self.parse_description(text)
     in_option = false
+    already_switched = false
     options = []
     description = []
 
     text[1..-1].each do |line|
 
-      if start_of_option?(line)
+      if start_of_option?(line) and not already_switched
         in_option = true
         options << [] #new option
-      elsif line =~ /^\s*$/
+      elsif line =~ /^\.PP/ and in_option
+        already_switched = true
         in_option = false
       end
 
