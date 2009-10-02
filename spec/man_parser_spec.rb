@@ -4,8 +4,8 @@ describe ManParser do
   describe :parse do
     it "finds the description" do
       d = ManParser.parse('ls')[:description]
-      d.should =~ /^List  information  about  the FILEs /
-      d.should be_end_with('problems, 2 if serious trouble.')
+      d.should =~ /^List information about the FILEs /
+      d.should =~ /problems, 2 if serious trouble\.$/
       d.should_not include('-a, --all')
       d.should_not include('do not ignore entries starting with')
       d.should_not include("      ")
@@ -17,7 +17,7 @@ describe ManParser do
       end
 
       it "finds all options" do
-        options.size.should == 60
+        options.size.should == 59
       end
 
       it "extracts the name" do

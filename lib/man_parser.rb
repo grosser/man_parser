@@ -4,7 +4,7 @@ class ManParser
     sections = sections(text)
     description, options = parse_description(sections['DESCRIPTION'])
     options = parse_options(options)
-    {:description => description.map(&:strip).join(''), :options=>options, :sections=>sections}
+    {:description => description.map{|l|l.strip}.join(''), :options=>options, :sections=>sections}
   end
 
   private
