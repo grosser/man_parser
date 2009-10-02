@@ -1,6 +1,6 @@
 class ManParser
   def self.parse(cmd)
-    text = `man #{cmd}`
+    text = `gzip -dc /usr/share/man/man1/#{cmd}.1.gz`
     sections = sections(text)
     description, options = parse_description(sections['DESCRIPTION'])
     options = parse_options(options)
@@ -56,14 +56,17 @@ class ManParser
     sections = Hash.new([])
 
     text.split("\n").each do |line|
-      name = line if line =~ /^[A-Z]+$/
-      sections[name] += [line]
+      if line =~ /^\.SH (.*)$/
+        name = $1
+      else
+        sections[name] += [line]
+      end
     end
 
     sections
   end
 
   def self.start_of_option?(line)
-    !!( line =~ /^\s+-+[\da-zA-Z]/)
+    !!( line =~ /^\\fB\\-/)
   end
 end

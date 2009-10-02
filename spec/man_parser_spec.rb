@@ -48,14 +48,12 @@ describe ManParser do
 
   describe :start_of_option? do
     {
-      '   -1'=>true,
-      '   -a'=>true,
-      '   -X'=>true,
-      '   -a, --all'=>true,
-      '   '=>false,
-      'asdas a -asd, --asd'=>false,
-      '---------'=>false,
-      '  --------- '=>false,
+      '\fB\-\-version\fR'=>true,
+      '\fB\-1\fR'=>true,
+      '\fB\-\-color\fR=\fIauto\fR'=>true,
+      '\fB\-T\fR, \fB\-\-tabsize\fR=\fICOLS\fR'=>true,
+      '\fB\-U\fR'=>true,
+      '\-\-\-\-\-'=>false,
       '   asdadas'=>false
     }.each do |line, success|
       it "recognises #{line} -- #{success}" do
