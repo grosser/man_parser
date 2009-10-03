@@ -38,6 +38,18 @@ describe ManParser do
     end
   end
 
+  describe :source do
+    it "reads the source" do
+      ManParser.source('printf').should =~ /^.\\\" DO NOT MODIFY THIS F(.*) access to the complete manual.\n$/m
+    end
+  end
+
+  describe :available_commands do
+    it "finds them" do
+      ManParser.available_commands.should include('printf')
+    end
+  end
+
   describe :parse_option do
     def parse(x)
       ManParser.send(:parse_option, x)

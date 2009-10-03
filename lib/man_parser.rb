@@ -1,4 +1,12 @@
 class ManParser
+  def self.available_commands
+    `ls #{root}`.split("\n").map{|c| c.sub('.1.gz','')}
+  end
+
+  def self.source(cmd)
+    `gzip -dc #{root}/#{cmd}.1.gz`
+  end
+
   def self.parse(cmd)
     sections = sections(source(cmd))
     description, options = parse_description(sections['DESCRIPTION'])
@@ -6,11 +14,11 @@ class ManParser
     {:description => description.map{|l|l.strip}.join(''), :options=>options, :sections=>sections}
   end
 
-  def self.source(cmd)
-    `gzip -dc /usr/share/man/man1/#{cmd}.1.gz`
-  end
-
   private
+
+  def self.root
+    '/usr/share/man/man1'
+  end
 
   def self.parse_option(option)
     option = option.gsub(/\\f[IB](.*?)\\fR/,"\\1").gsub('\\','')

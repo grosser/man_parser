@@ -25,6 +25,12 @@ Usage
     # description without options
     :description=>".PPPrint ARGUMENT(s) according to FORMAT\n bla bla...."}
 
+### available_commands
+    ManParser.available_commands => array of commands that are available for parsing
+
+### source
+    ManParser.source('ls') => uncleaned source of man file
+
 TODO
 ====
  - add to_html("\fBxx\fR") == "<b>xx</b>"
