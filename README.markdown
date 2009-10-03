@@ -2,7 +2,7 @@ Parse man source
 
 Install
 =======
-    sudo gem install grosser-man_parser -s http://gems.github.com/
+    sudo gem install man_parser -s http://gemcutter.org
 
 Usage
 =====
