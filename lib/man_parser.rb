@@ -1,10 +1,13 @@
 class ManParser
   def self.parse(cmd)
-    text = `gzip -dc /usr/share/man/man1/#{cmd}.1.gz`
-    sections = sections(text)
+    sections = sections(source(cmd))
     description, options = parse_description(sections['DESCRIPTION'])
     options = options.map{|option| parse_option(option*' ') }
     {:description => description.map{|l|l.strip}.join(''), :options=>options, :sections=>sections}
+  end
+
+  def self.source(cmd)
+    `gzip -dc /usr/share/man/man1/#{cmd}.1.gz`
   end
 
   private
@@ -25,19 +28,21 @@ class ManParser
       return
     end
 
-    found[:description] = found[:description].to_s.strip
+    found[:description] = found[:description].to_s.strip.sub(/\s*\.TP$/,'')
     found.delete(:argument) unless found[:argument]
 
     found
   end
 
+  # description can be split like "description, options, descriptions"
+  # so we remove the options part, and combind the 2 descriptions parts
   def self.parse_description(text)
     in_option = false
     already_switched = false
     options = []
     description = []
 
-    text[1..-1].each do |line|
+    text.split("\n")[1..-1].each do |line|
 
       if start_of_option?(line) and not already_switched
         in_option = true
@@ -56,9 +61,10 @@ class ManParser
       end
     end
 
-    [description, options]
+    [description * "\n", options]
   end
 
+  # split into sections according to "SectionHead" aka .SH
   def self.sections(text)
     name = 'OUT_OF_SECTION'
     sections = Hash.new([])
@@ -71,6 +77,7 @@ class ManParser
       end
     end
 
+    sections.each{|k,v| sections[k] = v*"\n"}
     sections
   end
 
