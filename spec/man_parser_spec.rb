@@ -11,7 +11,7 @@ describe ManParser do
       d.should_not include("      ")
     end
 
-    describe 'options' do
+    describe 'options in description' do
       def options
         ManParser.parse('ls')[:options]
       end
@@ -34,6 +34,28 @@ describe ManParser do
 
       it "understands format with only name (--author)" do
         options[2].should == {:name=>'author', :description=>'with -l, print the author of each file'}
+      end
+    end
+
+    describe 'options in OPTIONS section' do
+      def options
+        ManParser.parse('acpi')[:options]
+      end
+
+      it "finds all options" do
+        options.size.should == 18
+      end
+
+      it "extracts the name" do
+        options.first[:name].should == 'battery'
+      end
+
+      it "extracts the alias" do
+        options.first[:alias].should == 'b'
+      end
+
+      it "extracts the description" do
+        options.first[:description].should == 'show battery information'
       end
     end
   end

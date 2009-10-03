@@ -9,7 +9,12 @@ class ManParser
 
   def self.parse(cmd)
     sections = sections(source(cmd))
-    description, options = parse_description(sections['DESCRIPTION'])
+    if sections['OPTIONS']
+      options = find_options(sections['OPTIONS'])
+      description = sections['DESCRIPTION']
+    else
+      description, options = find_options_in_description(sections['DESCRIPTION'])
+    end
     options = options.map{|option| parse_option(option*' ') }
     {:description => description.map{|l|l.strip}.join(''), :options=>options, :sections=>sections}
   end
@@ -42,9 +47,14 @@ class ManParser
     found
   end
 
+  # find all options in a given section of text
+  def self.find_options(text)
+    []
+  end
+
   # description can be split like "description, options, descriptions"
-  # so we remove the options part, and combind the 2 descriptions parts
-  def self.parse_description(text)
+  # so we remove the options part, and combine the 2 descriptions parts
+  def self.find_options_in_description(text)
     in_option = false
     already_switched = false
     options = []
@@ -74,18 +84,21 @@ class ManParser
 
   # split into sections according to "SectionHead" aka .SH
   def self.sections(text)
+    lines = text.split("\n")+[".SH END"] 
     name = 'OUT_OF_SECTION'
-    sections = Hash.new([])
+    sections = {}
+    temp = []
 
-    text.split("\n").each do |line|
+    lines.each do |line|
       if line =~ /^\.SH (.*)$/
-        name = $1
+        sections[name] = temp * "\n"
+        temp = []
+        name = $1.gsub('"','').strip
       else
-        sections[name] += [line]
+        temp << line
       end
     end
 
-    sections.each{|k,v| sections[k] = v*"\n"}
     sections
   end
 
