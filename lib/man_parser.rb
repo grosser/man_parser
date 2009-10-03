@@ -9,6 +9,7 @@ class ManParser
 
   def self.parse(cmd)
     sections = sections(source(cmd))
+    return {} if not sections['OPTIONS'] and not sections['DESCRIPTION']
     description, options = find_options(sections['OPTIONS']||sections['DESCRIPTION'])
     description = sections['DESCRIPTION'] if description.to_s.empty?
     options = parse_options(options)
@@ -95,7 +96,7 @@ class ManParser
     temp = []
 
     lines.each do |line|
-      if line =~ /^\.SH (.*)$/
+      if line =~ /^\.S[hH] (.*)$/
         sections[name] = temp * "\n"
         temp = []
         name = $1.gsub('"','').strip

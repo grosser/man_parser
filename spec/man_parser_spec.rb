@@ -2,13 +2,21 @@ require 'spec/spec_helper'
 
 describe ManParser do
   describe :parse do
-    it "finds the description" do
+    it "clens the description" do
       d = ManParser.parse('ls')[:description]
       d.should =~ /^\.\\\" Add any additional description here\.PPList infor/
       d.should =~ /problems, 2 if serious trouble\.$/
       d.should_not include('\\-\\-all')
       d.should_not include('do not ignore entries starting with')
       d.should_not include("      ")
+    end
+
+    it "returns an empty hash for unknown commands" do
+      ManParser.parse('xxxx').should == {}
+    end
+
+    it "also parse .Sh section heads" do
+      ManParser.parse('acpi_fakekey')[:description].should_not be_empty
     end
 
     describe 'options in description' do
