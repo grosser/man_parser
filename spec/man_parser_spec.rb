@@ -67,6 +67,12 @@ describe ManParser do
       x = parse('\fB\-T\fR, \fB\-\-tabsize\fR=\fICOLS\fR assume tab stops at each COLS instead of 8 .TP')
       x.should == {:alias=>"T", :name => 'tabsize', :argument=>'COLS', :description=>"assume tab stops at each COLS instead of 8 .TP"}
     end
+
+    it "does not parse random stuff" do
+      ManParser.stub!(:puts)
+      x = parse('as we say: \fB\-T\fR, \fB\-\-tabsize\fR=\fICOLS\fR assume tab stops at each COLS instead of 8 .TP')
+      x.should == nil
+    end
   end
 
   describe :start_of_option? do

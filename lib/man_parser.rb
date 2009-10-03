@@ -11,21 +11,23 @@ class ManParser
 
   def self.parse_option(option)
     option = option.gsub(/\\f[IB](.*?)\\fR/,"\\1").gsub('\\','')
-    found =  if option =~ /^-(\w+), --([-\w]+)=(\w+)(.*)/
-      {:alias=>$1, :name=>$2, :argument=>$3, :description=>$4}
-    elsif option =~ /^-(\w+), --([-\w]+)(.*)/
-      {:alias=>$1, :name=>$2, :description=>$3}
-    elsif option =~ /^--([-\w]+)=(\w+)(.*)/
-      {:name=>$1, :argument=>$2, :description=>$3}
-    elsif option =~ /^--([-\w]+)(.*)/
-      {:name=>$1, :description=>$2}
+
+    found =  if option =~ /^-(\w+), --([-\w]+)(=(\w+))?(.*)/
+      {:alias=>$1, :name=>$2, :argument=>$4, :description=>$5}
+    elsif option =~ /^--([-\w]+)(=(\w+))?(.*)/
+      {:name=>$1, :argument=>$3, :description=>$4}
     elsif option =~ /^-([-\w]+)(.*)/
       {:alias=>$1, :description=>$2}
-    else
-      puts "#{option} <-> nil !"
     end
-    return unless found
-    found[:description] = found[:description].to_s.strip.gsub(/\s{2,}/, ' ')
+
+    if not found
+      puts "#{option} <-> nil !"
+      return
+    end
+
+    found[:description] = found[:description].to_s.strip
+    found.delete(:argument) unless found[:argument]
+
     found
   end
 
