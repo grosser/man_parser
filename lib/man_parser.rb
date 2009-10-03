@@ -3,18 +3,13 @@ class ManParser
     text = `gzip -dc /usr/share/man/man1/#{cmd}.1.gz`
     sections = sections(text)
     description, options = parse_description(sections['DESCRIPTION'])
-    options = parse_options(options)
+    options = options.map{|option| parse_option(option*' ') }
     {:description => description.map{|l|l.strip}.join(''), :options=>options, :sections=>sections}
   end
 
   private
 
-  def self.parse_options(options)
-    options.map{|option| parse_option(option) }
-  end
-
   def self.parse_option(option)
-    option = option.join(' ')
 #    option_rex = '([-\w\\]|[-\w\\]+\\fR=\\fI\w+)'
     found = if option =~ /^\\fB\\-([-\w\\]+\\fR=\\fI\w+|[-\w\\]+)\\fR, \\fB\\-\\-([-\w\\]+\\fR=\\fI\w+|[-\w\\]+)\\fR(.*)/
       {:alias=>$1, :name=>$2, :description=>$3}
