@@ -33,16 +33,39 @@ describe ManParser do
       end
 
       it "understands format with only name (--author)" do
-        options[2].should == {:name=>'author', :description=>'with \\fB\\-l\\fR, print the author of each file .TP'}
+        options[2].should == {:name=>'author', :description=>'with -l, print the author of each file .TP'}
       end
+    end
+  end
 
-      it "understands format with parameters --x=SIZE" do
-        options[4].should == {:name=>"block\\-size\\fR=\\fISIZE", :description=>"use SIZE\\-byte blocks .TP"}
-      end
+  describe :parse_option do
+    def parse(x)
+      ManParser.send(:parse_option, x)
+    end
 
-      it "userstands single-line style" do
-        options[7].should == {:name=>"C", :description=>"list entries by columns .TP"}
-      end
+    it "parses single --" do
+      x = parse('\fB\-\-help\fR display this help and exit .TP')
+      x.should == {:name=>"help", :description=>"display this help and exit .TP"}
+    end
+
+    it "parses single -- with =" do
+      x = parse('\fB\-\-block\-size\fR=\fISIZE\fR xyz')
+      x.should == {:name => 'block-size', :argument=>'SIZE', :description=>"xyz"}
+    end
+
+    it "parses single -" do
+      x = parse('\fB\-1\fR list one file per line .TP')
+      x.should == {:alias=>"1", :description=>"list one file per line .TP"}
+    end
+
+    it "parses - and --" do
+      x = parse('\fB\-Z\fR, \fB\-\-context\fR print any SELinux security context of each file .TP')
+      x.should == {:alias=>"Z", :name => 'context', :description=>"print any SELinux security context of each file .TP"}
+    end
+
+    it "parses - and -- with =" do
+      x = parse('\fB\-T\fR, \fB\-\-tabsize\fR=\fICOLS\fR assume tab stops at each COLS instead of 8 .TP')
+      x.should == {:alias=>"T", :name => 'tabsize', :argument=>'COLS', :description=>"assume tab stops at each COLS instead of 8 .TP"}
     end
   end
 
