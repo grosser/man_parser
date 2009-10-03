@@ -11,11 +11,19 @@ class ManParser
     sections = sections(source(cmd))
     description, options = find_options(sections['OPTIONS']||sections['DESCRIPTION'])
     description ||= sections['DESCRIPTION']
-    options = options.map{|option| parse_option(option*' ') }
+    options = parse_options(options)
     {:description => description.map{|l|l.strip}.join(''), :options=>options, :sections=>sections}
   end
 
   private
+
+  # remove common prefix from options
+  def self.parse_options(options)
+    options = options.map{|option| parse_option(option*' ') }
+    common = common_prefix(options.map{|o| o[:description]})
+    options.each{|o| o[:description] = o[:description].split(//)[common..-1].to_s}
+    options
+  end
 
   def self.root
     '/usr/share/man/man1'
@@ -29,10 +37,21 @@ class ManParser
       return
     end
 
-    found[:description] = found[:description].to_s.strip.sub(/\s*\.TP$/,'')
+    found[:description] = found[:description].to_s.strip.sub(/\s*\.TP$/,'').gsub(/\s{2,}/,' ')
     found.delete(:argument) unless found[:argument]
 
     found
+  end
+
+  def self.common_prefix(texts)
+    shortest = texts.map{|t| t.size}.min
+    shortest.downto(1) do |i|
+      common = texts.map{|t| t[0...i]}.uniq
+      next if common.size != 1
+      next if common.first =~ /^\w+$/
+      return i
+    end
+    return 0
   end
 
   # description can be split like "description, options, descriptions"
@@ -95,8 +114,8 @@ class ManParser
 
   def self.option_parts(text)
     text = without_markup(text).sub(/.IP "/,'')
-    if text =~ /^-(\w+)[,| ]+--(\w[-\w]*)(=(\w+))?(.*)/
-      {:alias=>$1, :name=>$2, :argument=>$4, :description=>$5}
+    if text =~ /^-(\w+)[,| ]+--(\w[-\w]*)(=(\w+)| <(\w+)>)?(.*)/
+      {:alias=>$1, :name=>$2, :argument=>$4||$5, :description=>$6}
     elsif text =~ /^--(\w[-\w]*)(=(\w+))?(.*)/
       {:name=>$1, :argument=>$3, :description=>$4}
     elsif text =~ /^-(\w[-\w]*)(.*)/

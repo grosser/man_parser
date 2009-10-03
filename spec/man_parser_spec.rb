@@ -55,7 +55,7 @@ describe ManParser do
       end
 
       it "extracts the description" do
-        options.first[:description].should == '" 10  show battery information'
+        options.first[:description].should == 'show battery information'
       end
     end
   end
@@ -100,6 +100,11 @@ describe ManParser do
     it "parses - and -- with =" do
       x = parse('\fB\-T\fR, \fB\-\-tabsize\fR=\fICOLS\fR assume tab stops at each COLS instead of 8 .TP')
       x.should == {:alias=>"T", :name => 'tabsize', :argument=>'COLS', :description=>"assume tab stops at each COLS instead of 8"}
+    end
+
+    it "parses - and -- with <dir>" do
+      x = parse('.IP "\fB-d | --directory <dir>\fP " 10 bla bla')
+      x.should == {:alias=>'d', :name=>'directory', :argument=>'dir', :description=>'" 10 bla bla'}
     end
 
     it "does not parse random stuff" do
