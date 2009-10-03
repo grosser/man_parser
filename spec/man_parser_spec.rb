@@ -111,6 +111,7 @@ describe ManParser do
 
   describe :start_of_option? do
     {
+      '.IP "\fB-c | --cooling\fP " 10' => true,
       '\fB\-\-version\fR'=>true,
       '\fB\-1\fR'=>true,
       '\fB\-\-color\fR=\fIauto\fR'=>true,

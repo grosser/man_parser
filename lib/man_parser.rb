@@ -9,12 +9,8 @@ class ManParser
 
   def self.parse(cmd)
     sections = sections(source(cmd))
-    if sections['OPTIONS']
-      options = find_options(sections['OPTIONS'])
-      description = sections['DESCRIPTION']
-    else
-      description, options = find_options_in_description(sections['DESCRIPTION'])
-    end
+    description, options = find_options(sections['OPTIONS']||sections['DESCRIPTION'])
+    description ||= sections['DESCRIPTION']
     options = options.map{|option| parse_option(option*' ') }
     {:description => description.map{|l|l.strip}.join(''), :options=>options, :sections=>sections}
   end
@@ -47,14 +43,9 @@ class ManParser
     found
   end
 
-  # find all options in a given section of text
-  def self.find_options(text)
-    []
-  end
-
   # description can be split like "description, options, descriptions"
   # so we remove the options part, and combine the 2 descriptions parts
-  def self.find_options_in_description(text)
+  def self.find_options(text)
     in_option = false
     already_switched = false
     options = []
@@ -103,6 +94,6 @@ class ManParser
   end
 
   def self.start_of_option?(line)
-    !!( line =~ /^\\fB\\-/)
+    !!( line =~ /^\\fB\\-/ or line =~ /.IP "\\fB/)
   end
 end
