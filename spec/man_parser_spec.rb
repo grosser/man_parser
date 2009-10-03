@@ -17,7 +17,7 @@ describe ManParser do
       end
 
       it "finds all options" do
-        options.size.should == 58
+        options.size.should == 57
       end
 
       it "extracts the name" do
@@ -56,6 +56,12 @@ describe ManParser do
 
       it "extracts the description" do
         options.first[:description].should == 'show battery information'
+      end
+    end
+
+    describe 'for grep' do
+      it "finds some options" do
+        ManParser.parse('grep')[:options].size.should == 70
       end
     end
   end
@@ -110,12 +116,13 @@ describe ManParser do
     it "does not parse random stuff" do
       ManParser.stub!(:puts)
       x = parse('as we say: \fB\-T\fR, \fB\-\-tabsize\fR=\fICOLS\fR assume tab stops at each COLS instead of 8')
-      x.should == nil
+      x.should == {}
     end
   end
 
   describe :is_option? do
     {
+      '.BR \-P ", " \-\^\-perl\-regexp' => true,
       '.IP "\fB-c | --cooling\fP " 10' => true,
       '\fB\-\-version\fR'=>true,
       '\fB\-1\fR'=>true,
