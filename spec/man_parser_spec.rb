@@ -42,6 +42,10 @@ describe ManParser do
         ManParser.parse('acpi')[:options]
       end
 
+      it "has a description" do
+        ManParser.parse('acpi')[:description].to_s.should_not be_empty
+      end
+
       it "finds all options x" do
         options.size.should == 18
       end

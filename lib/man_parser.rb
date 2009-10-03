@@ -10,7 +10,7 @@ class ManParser
   def self.parse(cmd)
     sections = sections(source(cmd))
     description, options = find_options(sections['OPTIONS']||sections['DESCRIPTION'])
-    description ||= sections['DESCRIPTION']
+    description = sections['DESCRIPTION'] if description.to_s.empty?
     options = parse_options(options)
     {:description => description.map{|l|l.strip}.join(''), :options=>options, :sections=>sections}
   end
