@@ -1,4 +1,4 @@
 #!/usr/bin/env ruby
 $LOAD_PATH << 'lib'
 require 'man_parser'
-print ManParser.source(ARGV[0])
+print ManParser.send(ARGV[0], ARGV[1])

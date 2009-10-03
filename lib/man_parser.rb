@@ -22,16 +22,8 @@ class ManParser
   end
 
   def self.parse_option(option)
-    option = option.gsub(/\\f[IB](.*?)\\fR/,"\\1").gsub('\\','')
-
-    found =  if option =~ /^-(\w+), --([-\w]+)(=(\w+))?(.*)/
-      {:alias=>$1, :name=>$2, :argument=>$4, :description=>$5}
-    elsif option =~ /^--([-\w]+)(=(\w+))?(.*)/
-      {:name=>$1, :argument=>$3, :description=>$4}
-    elsif option =~ /^-([-\w]+)(.*)/
-      {:alias=>$1, :description=>$2}
-    end
-
+    option = without_markup(option)
+    found = option_parts(option)
     if not found
       puts "#{option} <-> nil !"
       return
@@ -51,9 +43,9 @@ class ManParser
     options = []
     description = []
 
-    text.split("\n")[1..-1].each do |line|
+    text.split("\n").each do |line|
 
-      if start_of_option?(line) and not already_switched
+      if is_option?(line) and not already_switched
         in_option = true
         options << [] #new option
       elsif line =~ /^\.PP/ and in_option
@@ -93,7 +85,22 @@ class ManParser
     sections
   end
 
-  def self.start_of_option?(line)
-    !!( line =~ /^\\fB\\-/ or line =~ /.IP "\\fB/)
+  def self.without_markup(text)
+    text.gsub(/\\f[IB](.*?)\\f[RP]/,"\\1").gsub('\\','')
+  end
+
+  def self.is_option?(text)
+    !! option_parts(text)
+  end
+
+  def self.option_parts(text)
+    text = without_markup(text).sub(/.IP "/,'')
+    if text =~ /^-(\w+)[,| ]+--(\w[-\w]*)(=(\w+))?(.*)/
+      {:alias=>$1, :name=>$2, :argument=>$4, :description=>$5}
+    elsif text =~ /^--(\w[-\w]*)(=(\w+))?(.*)/
+      {:name=>$1, :argument=>$3, :description=>$4}
+    elsif text =~ /^-(\w[-\w]*)(.*)/
+      {:alias=>$1, :description=>$2}
+    end
   end
 end

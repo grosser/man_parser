@@ -4,7 +4,7 @@ describe ManParser do
   describe :parse do
     it "finds the description" do
       d = ManParser.parse('ls')[:description]
-      d.should =~ /^\.PPList information about the FILEs \(the current/
+      d.should =~ /^\.\\\" Add any additional description here\.PPList infor/
       d.should =~ /problems, 2 if serious trouble\.$/
       d.should_not include('\\-\\-all')
       d.should_not include('do not ignore entries starting with')
@@ -42,7 +42,7 @@ describe ManParser do
         ManParser.parse('acpi')[:options]
       end
 
-      it "finds all options" do
+      it "finds all options x" do
         options.size.should == 18
       end
 
@@ -55,7 +55,7 @@ describe ManParser do
       end
 
       it "extracts the description" do
-        options.first[:description].should == 'show battery information'
+        options.first[:description].should == '" 10  show battery information'
       end
     end
   end
@@ -109,7 +109,7 @@ describe ManParser do
     end
   end
 
-  describe :start_of_option? do
+  describe :is_option? do
     {
       '.IP "\fB-c | --cooling\fP " 10' => true,
       '\fB\-\-version\fR'=>true,
@@ -121,7 +121,7 @@ describe ManParser do
       '   asdadas'=>false
     }.each do |line, success|
       it "recognises #{line} -- #{success}" do
-        ManParser.send(:start_of_option?, line).should == success
+        ManParser.send(:is_option?, line).should == success
       end
     end
   end
