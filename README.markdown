@@ -2,7 +2,7 @@ Parse man source
 
 Install
 =======
-    sudo gem install man_parser -s http://gemcutter.org
+    sudo gem install man_parser
 
 Usage
 =====
