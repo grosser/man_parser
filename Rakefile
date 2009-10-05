@@ -5,6 +5,7 @@ task :default do
   system("spec #{options} #{files}")
 end
 
+# fake task so that rubyforge:release works
 task :rdoc do
 end
 
@@ -19,10 +20,7 @@ begin
     gem.authors = ["Michael Grosser"]
     gem.rubyforge_project = 'man-parser'
   end
-  Jeweler::GemcutterTasks.new
-  Jeweler::RubyforgeTasks.new do |gem|
-    gem.doc_task = "rdoc"
-  end
+  Jeweler::RubyforgeTasks.new
 rescue LoadError
   puts "Jeweler, or one of its dependencies, is not available. Install it with: sudo gem install technicalpickles-jeweler -s http://gems.github.com"
 end
