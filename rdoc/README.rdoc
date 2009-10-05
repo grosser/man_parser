@@ -1,1 +1,1 @@
-go to http://github.com/grosser/man_parser
+documentation is at http://github.com/grosser/man_parser
