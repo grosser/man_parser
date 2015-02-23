@@ -1,4 +1,4 @@
-require 'spec/spec_helper'
+require_relative 'spec_helper'
 
 describe ManParser do
   describe :parse do
@@ -86,7 +86,7 @@ describe ManParser do
 
   describe :available_commands do
     it "finds them" do
-      ManParser.available_commands.should include('printf')
+      ManParser.available_commands.should include('xargs')
     end
   end
 

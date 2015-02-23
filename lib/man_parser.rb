@@ -1,10 +1,16 @@
 class ManParser
   def self.available_commands
-    `ls #{root}`.split("\n").map{|c| c.sub('.1.gz','')}
+    `ls #{root}`.split("\n").map{|c| c.sub(/.1(.gz)?$/,'')}
   end
 
   def self.source(cmd)
-    `gzip -dc #{root}/#{cmd}.1.gz`
+    if File.exists?("#{cmd}.1.gz")
+      `gzip -dc #{root}/#{cmd}`
+    elsif File.exists?(cmd)
+      `cat #{root}/#{cmd}`
+    else
+      ''
+    end
   end
 
   def self.parse(cmd)
