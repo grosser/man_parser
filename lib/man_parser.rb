@@ -11,7 +11,6 @@ class RealFileSystem
     gz.read
   end
   def ls(dir)
-#    `ls #{dir}`.split("\n")
     Dir.entries(dir)
   end
 end
