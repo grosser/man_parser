@@ -1,4 +1,3 @@
 # ---- requirements
-$LOAD_PATH << File.expand_path("../lib", File.dirname(__FILE__))
 
-require 'man_parser'
+require_relative '../lib/man_parser'
