@@ -18,21 +18,15 @@ Gem::Specification.new do |s|
     "README.markdown",
      "Rakefile",
      "VERSION",
-     "lib/man_parser.rb",
      "man_parser.gemspec",
-     "spec/call",
-     "spec/man_parser_spec.rb",
-     "spec/spec_helper.rb"
-  ]
+     "spec/call"
+  ]+Dir.glob('lib/**/*.rb')+Dir.glob('spec/**/*.rb')+Dir.glob('spec/**/*.txt')
   s.homepage = %q{http://github.com/grosser/man_parser}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.5}
   s.summary = %q{Parse unix man pages into ruby-readable format}
-  s.test_files = [
-    "spec/spec_helper.rb",
-     "spec/man_parser_spec.rb"
-  ]
+  s.test_files = Dir.glob('spec/**/*.rb')+Dir.glob('spec/**/*.txt')
 
   if s.respond_to? :specification_version then
     current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION

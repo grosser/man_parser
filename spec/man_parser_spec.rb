@@ -1,5 +1,12 @@
 require_relative 'spec_helper'
 
+ManParser.use_filesystem(FakeFileSystem.new({
+  'ls' => $ls_man, 
+  'printf' => $printf_man, 
+  'grep' => $grep_man, 
+  'xargs'=> $xargs_man
+}))
+
 describe ManParser do
   describe :parse do
     it "clens the description" do
