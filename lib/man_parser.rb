@@ -1,15 +1,40 @@
+class RealFileSystem
+  def exists?(name)
+    File.exists?(name)
+  end
+  def read(name)
+    File.read(name)
+  end
+  def read_and_gzip_decompress(name)
+    f = File.open(name,"r")
+    gz = Zlib::GzipReader.new(f)
+    gz.read
+  end
+  def ls(dir)
+    Dir.entries(dir)
+  end
+end
+
 class ManParser
+  @@fs = RealFileSystem.new
+
+  def self.use_filesystem(fs)
+    @@fs = fs
+  end
+
   def self.available_commands
-    `ls #{root}`.split("\n").map{|c| c.sub(/.1(.gz)?$/,'')}
+    @@fs.ls(root).map{|c| c.sub(/.1(.gz)?$/,'')}
   end
 
   def self.source(cmd)
-    if File.exists?("#{cmd}.1.gz")
-      `gzip -dc #{root}/#{cmd}`
-    elsif File.exists?(cmd)
-      `cat #{root}/#{cmd}`
+    name = File.join(root, cmd)
+    if @@fs.exists?("#{name}.1.gz")
+      return @@fs.read_and_gzip_decompress("#{name}.1.gz")
+    elsif @@fs.exists?(name)
+      return @@fs.read(name)
     else
-      ''
+      return ''
+      #raise "Could not find #{cmd}"
     end
   end
 
@@ -96,6 +121,9 @@ class ManParser
 
   # split into sections according to "SectionHead" aka .SH
   def self.sections(text)
+    if text.nil?
+      raise "Text is nil!"
+    end
     lines = text.split("\n")+[".SH END"] 
     name = 'OUT_OF_SECTION'
     sections = {}
